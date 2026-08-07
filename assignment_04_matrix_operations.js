@@ -70,3 +70,148 @@
 
 const readlineSync = require('readline-sync');
 
+function readMatrix(rows, columns, name) {
+    const matrix = [];
+    console.log('\nEnter values for Matrix ' + name + ':');
+
+    for (let i = 0; i < rows; i++) {
+        let row;
+
+        while (true) {
+            row = readlineSync.question('Enter row ' + (i + 1) + ': ').trim().split(/\s+/).map(Number);
+
+            if (row.length === columns) {
+                let valid = true;
+                for (let j = 0; j < row.length; j++) {
+                    if (Number.isNaN(row[j])) {
+                        valid = false;
+                    }
+                }
+
+                if (valid) {
+                    break;
+                }
+            }
+
+            console.log('Error: Please enter exactly ' + columns + ' valid numbers.');
+        }
+
+        matrix.push(row);
+    }
+
+    return matrix;
+}
+
+function transposeMatrix(matrix) {
+    const result = [];
+
+    for (let column = 0; column < matrix[0].length; column++) {
+        const row = [];
+
+        for (let i = 0; i < matrix.length; i++) {
+            row.push(matrix[i][column]);
+        }
+
+        result.push(row);
+    }
+
+    return result;
+}
+
+function addMatrices(matrixA, matrixB) {
+    const result = [];
+
+    for (let i = 0; i < matrixA.length; i++) {
+        const row = [];
+
+        for (let j = 0; j < matrixA[i].length; j++) {
+            row.push(matrixA[i][j] + matrixB[i][j]);
+        }
+
+        result.push(row);
+    }
+
+    return result;
+}
+
+function multiplyMatrices(matrixA, matrixB) {
+    const result = [];
+
+    for (let i = 0; i < matrixA.length; i++) {
+        const row = [];
+
+        for (let j = 0; j < matrixB[0].length; j++) {
+            let sum = 0;
+
+            for (let k = 0; k < matrixB.length; k++) {
+                sum += matrixA[i][k] * matrixB[k][j];
+            }
+
+            row.push(sum);
+        }
+
+        result.push(row);
+    }
+
+    return result;
+}
+
+function displayMatrix(matrix) {
+    for (let i = 0; i < matrix.length; i++) {
+        let line = '';
+
+        for (let j = 0; j < matrix[i].length; j++) {
+            line += String(matrix[i][j]).padStart(8, ' ');
+        }
+
+        console.log(line);
+    }
+}
+
+function main() {
+    console.log('PART A - TRANSPOSE A MATRIX');
+    const rowsA = readlineSync.questionInt('Enter number of rows: ');
+    const columnsA = readlineSync.questionInt('Enter number of columns: ');
+
+    if (rowsA <= 0 || columnsA <= 0) {
+        console.log('Error: Matrix dimensions must be positive integers.');
+        return;
+    }
+
+    const matrix = readMatrix(rowsA, columnsA, 'A');
+    console.log('\nOriginal Matrix:');
+    displayMatrix(matrix);
+    console.log('\nTransposed Matrix:');
+    displayMatrix(transposeMatrix(matrix));
+
+    console.log('\nPART B - ADD TWO MATRICES');
+    const addRows = readlineSync.questionInt('Enter number of rows: ');
+    const addColumns = readlineSync.questionInt('Enter number of columns: ');
+
+    if (addRows <= 0 || addColumns <= 0) {
+        console.log('Error: Matrix dimensions must be positive integers.');
+        return;
+    }
+
+    const addA = readMatrix(addRows, addColumns, 'A');
+    const addB = readMatrix(addRows, addColumns, 'B');
+    console.log('\nSum of Matrices:');
+    displayMatrix(addMatrices(addA, addB));
+
+    console.log('\nPART C - MULTIPLY TWO MATRICES');
+    const multiplyRowsA = readlineSync.questionInt('Enter rows of Matrix A: ');
+    const multiplyColumnsA = readlineSync.questionInt('Enter columns of Matrix A: ');
+    const multiplyColumnsB = readlineSync.questionInt('Enter columns of Matrix B: ');
+
+    if (multiplyRowsA <= 0 || multiplyColumnsA <= 0 || multiplyColumnsB <= 0) {
+        console.log('Error: Matrix dimensions must be positive integers.');
+        return;
+    }
+
+    const multiplyA = readMatrix(multiplyRowsA, multiplyColumnsA, 'A');
+    const multiplyB = readMatrix(multiplyColumnsA, multiplyColumnsB, 'B');
+    console.log('\nProduct of Matrices:');
+    displayMatrix(multiplyMatrices(multiplyA, multiplyB));
+}
+
+main();
